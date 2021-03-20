@@ -51,9 +51,8 @@ export const getGPSCoordinates = (dispatch) => {
     }
     return navigator.geolocation.getCurrentPosition(
         (position) => {
-            let lat = position.coords.latitude;
-            let long = position.coords.longitude;
-            dispatch({ type: 'SET_GPS_COORDINATES', payload: { lat, long } })
+            const { latitude, longitude } = position.coords;
+            dispatch({ type: 'SET_GPS_COORDINATES', payload: { latitude, longitude } })
         },
         (e) => {
             console.log(e)

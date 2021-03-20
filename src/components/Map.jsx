@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Wrapper from '../common/Wrapper';
 import ReactMapboxGl, { Marker } from 'react-mapbox-gl';
 import { useGlobalState } from '../providers/root';
@@ -13,33 +13,40 @@ const UserMap = () => {
     )
 }
 
+const defaultState = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+    zoom: 14,
+}
+
 const MapContainer = () => {
     const { coordinates } = useGlobalState();
+    const { latitude, longitude } = coordinates;
 
-    const viewportObj = {
-        width: window.innerWidth,
-        height: window.innerHeight,
-        latitude: coordinates.lat,
-        longitude: coordinates.long,
-        zoom: 14,
-    }
+    const [viewport, setViewport] = React.useState();
 
-    const [viewport, setViewport] = React.useState({
-        ...viewportObj, 
-        latitude: coordinates.lat,
-        longitude: coordinates.long,
-    });
-
-    console.log({ viewportObj, viewport })
+    console.log({ viewport, coordinates })
 
     const Map = ReactMapboxGl({
         accessToken:
             process.env.REACT_APP_MAPBOX_TOKEN
     });
 
-    if (!coordinates.hasCoordinates) {
+    useEffect(() => {
+        if (coordinates.hasCoordinates) {
+            console.log(typeof latitude)
+            setViewport({
+                ...defaultState,
+                latitude,
+                longitude
+            })
+        }
+    }, [coordinates.hasCoordinates, latitude, longitude])
+
+    if (!coordinates.hasCoordinates || !viewport?.latitude || !viewport?.longitude) {
         return <Spinner />
     }
+    debugger
     return (
         <Map
             style="mapbox://styles/mapbox/basic-v9"
@@ -50,8 +57,8 @@ const MapContainer = () => {
             center={[viewport.longitude, viewport.latitude]}
             zoom={[viewport.zoom]}
         >
-            <Marker key="you-marker" coordinates={[coordinates.long, coordinates.lat]}>
-                <div className="you">You</div>
+            <Marker key="you-marker" coordinates={[coordinates.longitude, coordinates.latitude]}>
+                <div className="you" />
             </Marker >
         </Map>
     )

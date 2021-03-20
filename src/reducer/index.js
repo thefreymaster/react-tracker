@@ -38,18 +38,13 @@ const reducer = (state, action) => {
             break;
         }
         case 'SET_GPS_COORDINATES': {
-            newState.coordinates.lat = payload.lat;
-            newState.coordinates.long = payload.long;
+            newState.coordinates.latitude = payload.latitude;
+            newState.coordinates.longitude = payload.longitude;
             newState.coordinates.hasCoordinates = true;
             break;
         }
         case 'FETCHING_COMPLETE': {
             newState.meta.fetching = false;
-            break;
-        }
-        case 'SET_GPS_COORDINATES': {
-            newState.coordinates.lat = payload.lat;
-            newState.coordinates.long = payload.long;
             break;
         }
         case 'IS_SERVER_ERROR': {

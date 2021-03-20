@@ -17,8 +17,8 @@ export interface IDefaultState {
     }
     dispatch: any;
     coordinates: {
-        lat?: number;
-        long?: number;
+        latitude?: number;
+        longitude?: number;
         hasCoordinates: boolean;
     }
 }
@@ -39,8 +39,6 @@ const defaultState: IDefaultState = {
     },
     coordinates: {
         hasCoordinates: false,
-        lat: 30.27433216857506,
-        long: -97.74037796492102
     },
     dispatch: () => { },
 }
