@@ -5,6 +5,7 @@ import { useToast } from '@chakra-ui/react';
 import { getGPSCoordinates } from './utils/gps';
 import { checkForFirebaseAuth } from './api/firebase';
 import UserMap from './components/Map';
+import Router from './router';
 
 function App() {
 
@@ -23,14 +24,11 @@ function App() {
   }
 
   React.useEffect(() => {
-    if (navigator.geolocation) {
-      getGPSCoordinates(dispatch);
-    }
     checkForFirebaseAuth(dispatch, showSuccessToast);
   }, [])
 
   return (
-    <UserMap />
+    <Router />
   );
 }
 

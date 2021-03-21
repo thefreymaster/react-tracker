@@ -69,6 +69,13 @@ export const signOutWithGoogle = (dispatch, showInfoToast, history) => {
     });
 }
 
+export const addUserLocation = ({ postData, uid, dispatch }) => {
+    var userListRef = firebase.database().ref(`users/${uid}/coordinates`);
+    userListRef.update({ ...postData, createdDate: new Date().toISOString() }).then(() => {
+        dispatch(fetchingComplete);
+    });
+}
+
 export const addRestaurant = ({ postData, uid, dispatch, history, toast }) => {
     dispatch(isFetching);
     var restaurantListRef = firebase.database().ref(`users/${uid}/restaurants`);

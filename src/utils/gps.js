@@ -1,3 +1,5 @@
+import { addUserLocation } from "../api/firebase";
+
 export const getCoordinates = (setFieldValue, setIsGettingCoordinates, setGpsError) => {
     const options = {
         timeout: 10000,
@@ -45,14 +47,20 @@ export const getCoordinatesOutsideForm = (setIsGettingCoordinates, setGpsError, 
     );
 }
 
-export const getGPSCoordinates = (dispatch) => {
+export const getGPSCoordinates = (dispatch, uid, hasCoordinates, setViewport) => {
     const options = {
         timeout: 10000, enableHighAccuracy: true, maximumAge: 0
     }
     return navigator.geolocation.getCurrentPosition(
         (position) => {
             const { latitude, longitude } = position.coords;
+            addUserLocation({ postData: { latitude, longitude }, uid, dispatch })
+            if(!hasCoordinates){
+                dispatch({ type: 'SET_HAS_GPS_COORDINATES' })
+                setViewport()
+            }
             dispatch({ type: 'SET_GPS_COORDINATES', payload: { latitude, longitude } })
+            console.log({ latitude, longitude })
         },
         (e) => {
             console.log(e)

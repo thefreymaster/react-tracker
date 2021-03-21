@@ -22,13 +22,13 @@
 }
 
 .you {
-    width           : 20px;
-    height          : 20px;
+    width           : 44px;
+    height          : 44px;
     border-radius   : 100px;
     border          : 2px solid white;
     // animation       : pulseDot 4s cubic-bezier(0.455, 0.03, 0.515, 0.955) -.4s infinite;
     background-color: #9b2c2c;
-    border-radius   : 50%;
+    border-radius   : 100%;
     box-sizing      : border-box;
     box-shadow      : rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     will-change     : animation;
