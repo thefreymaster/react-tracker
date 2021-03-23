@@ -40,6 +40,8 @@ const reducer = (state, action) => {
         case 'SET_GPS_COORDINATES': {
             newState.coordinates.latitude = payload.latitude;
             newState.coordinates.longitude = payload.longitude;
+            newState.coordinates.hasCoordinates = true;
+
             break;
         }
         case 'SET_HAS_GPS_COORDINATES': {

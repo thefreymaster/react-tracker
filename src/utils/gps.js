@@ -47,7 +47,7 @@ export const getCoordinatesOutsideForm = (setIsGettingCoordinates, setGpsError, 
     );
 }
 
-export const getGPSCoordinates = (dispatch, uid, hasCoordinates, setViewport) => {
+export const getGPSCoordinates = (dispatch, uid) => {
     const options = {
         timeout: 10000, enableHighAccuracy: true, maximumAge: 0
     }

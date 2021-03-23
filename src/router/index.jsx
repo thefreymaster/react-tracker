@@ -10,7 +10,9 @@ const Router = () => {
     const { firebase, coordinates, dispatch } = useGlobalState();
 
     useEffect(() => {
-        getGPSCoordinates(dispatch, firebase.user.uid, coordinates.hasCoordinates)
+        if(firebase.isAuthenticated){
+            getGPSCoordinates(dispatch, firebase.user.uid, coordinates.hasCoordinates)
+        }
     }, [firebase.isAuthenticated])
 
     if (firebase.isValidatingAuthentication || !coordinates.hasCoordinates) {

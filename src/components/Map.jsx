@@ -54,17 +54,7 @@ const MapContainer = () => {
 
 const MarkerContainer = () => {
     const { coordinates, firebase, dispatch } = useGlobalState();
-    useEffect(() => {
-        if (navigator.geolocation && firebase.isAuthenticated) {
-            const getGPS = () => {
-                setTimeout(() => {
-                    getGPSCoordinates(dispatch, firebase.user.uid, coordinates.hasCoordinates);
-                    getGPS();
-                }, 1000);
-            }
-            getGPS();
-        }
-    }, [firebase.isAuthenticated])
+
     return (
         <Marker key="you-marker" coordinates={[coordinates.longitude, coordinates.latitude]}>
             <Avatar style={{ border: '2px solid white', boxShadow: DAY_BOX_SHADOW }} src={firebase.user.photoURL} />
