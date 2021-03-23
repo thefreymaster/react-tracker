@@ -23,43 +23,20 @@ const defaultState = {
 }
 
 const MapContainer = () => {
-    const { coordinates, firebase, dispatch } = useGlobalState();
+    const { coordinates } = useGlobalState();
     const { latitude, longitude } = coordinates;
 
-    const [viewport, setViewport] = React.useState();
-
-    console.log({ viewport, coordinates })
+    const [viewport, setViewport] = React.useState({
+        ...defaultState,
+        latitude, 
+        longitude
+    });
 
     const Map = ReactMapboxGl({
         accessToken:
             process.env.REACT_APP_MAPBOX_TOKEN
     });
 
-    useEffect(() => {
-        if (navigator.geolocation && firebase.isAuthenticated) {
-            const updateState = () => setViewport({
-                ...defaultState,
-                latitude,
-                longitude
-            })
-            getGPSCoordinates(dispatch, firebase.user.uid, coordinates.hasCoordinates, updateState);
-        }
-    }, [firebase.isAuthenticated])
-
-    if (firebase.isValidatingAuthentication) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-                <Spinner colorScheme="red" size="md" />
-            </Box>
-        )
-    }
-    if (!firebase.isValidatingAuthentication && !firebase.isAuthenticated) {
-        return <Redirect to="/" />
-    }
-
-    if (!coordinates.hasCoordinates || !viewport?.latitude || !viewport?.longitude) {
-        return <Spinner />
-    }
     return (
         <Map
             style="mapbox://styles/mapbox/basic-v9"

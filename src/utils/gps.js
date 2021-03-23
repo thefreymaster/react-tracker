@@ -55,10 +55,6 @@ export const getGPSCoordinates = (dispatch, uid, hasCoordinates, setViewport) =>
         (position) => {
             const { latitude, longitude } = position.coords;
             addUserLocation({ postData: { latitude, longitude }, uid, dispatch })
-            if(!hasCoordinates){
-                dispatch({ type: 'SET_HAS_GPS_COORDINATES' })
-                setViewport()
-            }
             dispatch({ type: 'SET_GPS_COORDINATES', payload: { latitude, longitude } })
             console.log({ latitude, longitude })
         },
