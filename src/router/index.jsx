@@ -5,6 +5,7 @@ import Welcome from '../components/Welcome';
 import { Spinner } from '@chakra-ui/react';
 import RequestLocation from '../components/RequestLocation';
 import UserMap from '../components/UsersMap';
+import AddFriend from '../components/AddFriend';
 
 const Router = () => {
     const { firebase } = useGlobalState();
@@ -22,6 +23,9 @@ const Router = () => {
             </Route>
             <Route exact path="/map">
                 <UserMap />
+            </Route>
+            <Route exact path="/add">
+                <AddFriend />
             </Route>
             <Route exact path="/*">
                 <Redirect to="/" />

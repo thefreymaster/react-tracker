@@ -6,6 +6,8 @@ import { Redirect } from 'react-router-dom';
 import { Avatar } from '@chakra-ui/react';
 import { DAY_BOX_SHADOW } from '../../constants';
 import AbsoluteButton from '../../common/AbsoluteButton';
+import { useHistory } from 'react-router-dom';
+
 import { readOtherUserLocation } from '../../api/firebase';
 
 const UserMap = () => {
@@ -33,6 +35,7 @@ const defaultState = {
 
 const MapContainer = (props) => {
     const { latitude, longitude } = props.coordinates;
+    const history = useHistory()
 
     const [viewport, setViewport] = React.useState({
         ...defaultState,
@@ -56,9 +59,23 @@ const MapContainer = (props) => {
             zoom={[viewport.zoom]}
         >
             <MarkerContainer coordinates={props.coordinates} />
-            <AbsoluteButton>Add Friend</AbsoluteButton>
+            <AbsoluteButton onClick={() => history.push('/add')}>Add Friend</AbsoluteButton>
+            <FriendsContainer />
         </Map>
     )
+}
+
+const FriendsContainer = (props) => {
+    const { authorizedUsers } = useGlobalState();
+    return Object.entries(authorizedUsers).map(([key, value]) => {
+        const { coordinates } = value;
+        return (
+            <Marker key="you-marker" coordinates={[coordinates.longitude, coordinates.latitude]}>
+                <Avatar style={{ border: '2px solid white', boxShadow: DAY_BOX_SHADOW }} src={value.avatarUrl} />
+            </Marker>
+        )
+    })
+
 }
 
 const MarkerContainer = (props) => {
@@ -67,7 +84,7 @@ const MarkerContainer = (props) => {
     return (
         <Marker key="you-marker" coordinates={[props.coordinates.longitude, props.coordinates.latitude]}>
             <Avatar style={{ border: '2px solid white', boxShadow: DAY_BOX_SHADOW }} src={firebase.user.photoURL} />
-        </Marker >
+        </Marker>
     )
 }
 

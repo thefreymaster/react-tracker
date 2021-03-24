@@ -47,14 +47,14 @@ export const getCoordinatesOutsideForm = (setIsGettingCoordinates, setGpsError, 
     );
 }
 
-export const getGPSCoordinates = (dispatch, uid) => {
+export const getGPSCoordinates = (dispatch, uid, avatarUrl) => {
     const options = {
         timeout: 10000, enableHighAccuracy: true, maximumAge: 0
     }
     return navigator.geolocation.getCurrentPosition(
         (position) => {
             const { latitude, longitude } = position.coords;
-            addUserLocation({ postData: { coordinates: { latitude, longitude }}, uid, dispatch })
+            addUserLocation({ postData: { coordinates: { latitude, longitude }}, uid, dispatch, avatarUrl })
             dispatch({ type: 'SET_GPS_COORDINATES', payload: { latitude, longitude } })
         },
         (e) => {

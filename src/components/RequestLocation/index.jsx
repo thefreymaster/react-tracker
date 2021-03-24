@@ -7,7 +7,7 @@ import { Redirect } from 'react-router-dom';
 const RequestLocation = () => {
     const { coordinates, dispatch, firebase } = useGlobalState();
     useEffect(() => {
-        getGPSCoordinates(dispatch, firebase.user.uid)
+        getGPSCoordinates(dispatch, firebase.user.uid, firebase.user.photoURL)
     }, [])
     if(!coordinates.hasCoordinates){
         return (

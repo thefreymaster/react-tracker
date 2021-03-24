@@ -44,6 +44,10 @@ const reducer = (state, action) => {
 
             break;
         }
+        case 'ADD_AUTHORIZED_USER_DATA': {
+            newState.authorizedUsers[payload.uid] = payload;
+            break;
+        }
         case 'SET_HAS_GPS_COORDINATES': {
             newState.coordinates.hasCoordinates = true;
             break;
