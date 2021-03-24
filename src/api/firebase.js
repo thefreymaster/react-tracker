@@ -75,3 +75,12 @@ export const addUserLocation = ({ postData, uid, dispatch }) => {
         dispatch(fetchingComplete);
     });
 }
+
+export const readOtherUserLocation = ({ uid }) => {
+    var userRefUpdates = firebase.database().ref('users/' + uid + '/coordinates');
+    userRefUpdates.on('value', (snapshot) => {
+        const snapshotValue = snapshot.val();
+        debugger
+        //add data to store next to be rendered
+     })
+}
