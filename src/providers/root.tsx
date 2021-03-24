@@ -15,6 +15,7 @@ export interface IDefaultState {
         isDay: boolean;
         isInstalled: boolean;
     }
+    otherUsers: object;
     dispatch: any;
     coordinates: {
         latitude?: number;
@@ -31,6 +32,7 @@ const defaultState: IDefaultState = {
         isAuthenticatedError: false,
         user: {},
     },
+    otherUsers: {},
     meta: {
         isServerError: false,
         fetching: true,

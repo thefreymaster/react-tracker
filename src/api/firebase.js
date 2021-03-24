@@ -77,6 +77,7 @@ export const addUserLocation = ({ postData, uid, dispatch }) => {
 }
 
 export const readOtherUserLocation = ({ uid }) => {
+    //read this uid from our logged in user's data
     var userRefUpdates = firebase.database().ref('users/' + uid + '/coordinates');
     userRefUpdates.on('value', (snapshot) => {
         const snapshotValue = snapshot.val();
