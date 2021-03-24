@@ -33,7 +33,7 @@ const Welcome = () => {
         )
     }
     if (!firebase.isValidatingAuthentication && firebase.isAuthenticated) {
-        return <Redirect to="/" />
+        return <Redirect to="/request" />
     }
     const background = {
         // backgroundImage: `url(${CUTTING_BOARD})`,

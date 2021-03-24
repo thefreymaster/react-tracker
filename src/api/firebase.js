@@ -70,41 +70,8 @@ export const signOutWithGoogle = (dispatch, showInfoToast, history) => {
 }
 
 export const addUserLocation = ({ postData, uid, dispatch }) => {
-    var userListRef = firebase.database().ref(`users/${uid}/coordinates`);
+    var userListRef = firebase.database().ref(`users/${uid}`);
     userListRef.update({ ...postData, createdDate: new Date().toISOString() }).then(() => {
         dispatch(fetchingComplete);
-    });
-}
-
-export const addRestaurant = ({ postData, uid, dispatch, history, toast }) => {
-    dispatch(isFetching);
-    var restaurantListRef = firebase.database().ref(`users/${uid}/restaurants`);
-    restaurantListRef.push({ ...postData, createdDate: new Date().toISOString() }).then(() => {
-        toast();
-        dispatch(fetchingComplete);
-        history.push("/");
-    });
-}
-
-export const updateRestaurant = ({ postData, uid, dispatch, history, itemId, toast }) => {
-    dispatch(isFetching);
-    var restaurantListRef = firebase.database().ref(`users/${uid}/restaurants/${itemId}`);
-    console.log({ ...postData, modifiedData: new Date().toISOString() })
-    restaurantListRef.update({ ...postData, modifiedData: new Date().toISOString() }).then(() => {
-        toast();
-        dispatch(fetchingComplete)
-        history.goBack();
-    });
-}
-
-export const deleteRestaurant = ({ uid, dispatch, history, itemId, onClose, setIsDeleting, toast }) => {
-    dispatch(isFetching);
-    var restaurantListRef = firebase.database().ref(`users/${uid}/restaurants/${itemId}`);
-    restaurantListRef.remove().then(() => {
-        toast();
-        dispatch(fetchingComplete);
-        setIsDeleting(false);
-        onClose();
-        history.push("/");
     });
 }

@@ -49,7 +49,6 @@ export const useGlobalState = () => React.useContext(Context);
 
 export const Provider = (props: { children: React.ReactNode }) => {
     const [state, dispatch] = React.useReducer(reducer, defaultState);
-
     return (
         <Context.Provider value={{ ...state as IDefaultState, dispatch }}>
             {props.children}

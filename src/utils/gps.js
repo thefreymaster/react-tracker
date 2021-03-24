@@ -56,7 +56,6 @@ export const getGPSCoordinates = (dispatch, uid) => {
             const { latitude, longitude } = position.coords;
             addUserLocation({ postData: { latitude, longitude }, uid, dispatch })
             dispatch({ type: 'SET_GPS_COORDINATES', payload: { latitude, longitude } })
-            console.log({ latitude, longitude })
         },
         (e) => {
             console.log(e)
