@@ -6,12 +6,13 @@ import { Spinner } from '@chakra-ui/react';
 import RequestLocation from '../components/RequestLocation';
 import UserMap from '../components/UsersMap';
 import AddFriend from '../components/AddFriend';
+import Wrapper from '../common/Wrapper';
 
 const Router = () => {
     const { firebase } = useGlobalState();
 
     if (firebase.isValidatingAuthentication) {
-        return <Spinner />
+        return <Wrapper><Spinner /></Wrapper>
     }
     return (
         <Switch>

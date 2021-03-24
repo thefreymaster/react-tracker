@@ -3,17 +3,20 @@ import React, { useEffect } from 'react';
 import { useGlobalState } from '../../providers/root';
 import { getGPSCoordinates } from '../../utils/gps';
 import { Redirect } from 'react-router-dom';
+import Wrapper from '../../common/Wrapper';
 
 const RequestLocation = () => {
     const { coordinates, dispatch, firebase } = useGlobalState();
     useEffect(() => {
         getGPSCoordinates(dispatch, firebase.user.uid, firebase.user.photoURL)
     }, [])
-    if(!coordinates.hasCoordinates){
+    if (!coordinates.hasCoordinates) {
         return (
-            <Box>
-                <Spinner />
-            </Box>
+            <Wrapper>
+                <Box display="flex" alignItems="center" justifyContent="center">
+                    <Spinner />
+                </Box>
+            </Wrapper>
         )
     }
     return (

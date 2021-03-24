@@ -65,13 +65,27 @@ const MapContainer = (props) => {
     )
 }
 
+const style = {
+    width: 34,
+    height: 34,
+    backgroundColor: 'white',
+    transform: 'rotate(45deg)',
+    position: 'fixed',
+    zIndex: -1,
+    top: '17px',
+    left: '7px',
+    borderRadius: '50px 50px 0px 50px',
+    boxShadow: 'rgb(255 255 255 / 50%) 0px 0px 0px -1px, rgb(0 0 0 / 14%) 0px 1px 1px 0px, rgb(0 0 0 / 12%) 0px 1px 3px 0px',
+}
+
 const FriendsContainer = (props) => {
     const { authorizedUsers } = useGlobalState();
     return Object.entries(authorizedUsers).map(([key, value]) => {
         const { coordinates } = value;
         return (
             <Marker key="you-marker" coordinates={[coordinates.longitude, coordinates.latitude]}>
-                <Avatar style={{ border: '2px solid white', boxShadow: DAY_BOX_SHADOW }} src={value.avatarUrl} />
+                <Avatar size="md" style={{ border: '2px solid white' }} src={value.avatarUrl} />
+                <div style={style} />
             </Marker>
         )
     })
@@ -83,7 +97,8 @@ const MarkerContainer = (props) => {
 
     return (
         <Marker key="you-marker" coordinates={[props.coordinates.longitude, props.coordinates.latitude]}>
-            <Avatar style={{ border: '2px solid white', boxShadow: DAY_BOX_SHADOW }} src={firebase.user.photoURL} />
+            <Avatar size="md" style={{ border: '2px solid white' }} src={firebase.user.photoURL} />
+            <div style={style} />
         </Marker>
     )
 }
