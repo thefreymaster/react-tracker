@@ -4,6 +4,8 @@ import { useGlobalState } from './providers/root';
 import { useToast } from '@chakra-ui/react';
 import { checkForFirebaseAuth } from './api/firebase';
 import Router from './router';
+import Header from './components/Header';
+import Zindex from './common/Zindex';
 
 function App() {
 
@@ -26,7 +28,10 @@ function App() {
   }, [])
 
   return (
-    <Router />
+    <Zindex zIndex={1}>
+      <Header />
+      <Router />
+    </Zindex>
   );
 }
 

@@ -1,5 +1,5 @@
 import Wrapper from '../../common/Wrapper';
-import ReactMapboxGl, { Marker } from 'react-mapbox-gl';
+import ReactMapboxGl, { Feature, Image, Layer, Marker } from 'react-mapbox-gl';
 import React, { useEffect } from 'react';
 import { useGlobalState } from '../../providers/root';
 import { Redirect } from 'react-router-dom';
@@ -8,18 +8,28 @@ import { DAY_BOX_SHADOW } from '../../constants';
 import AbsoluteButton from '../../common/AbsoluteButton';
 import { useHistory } from 'react-router-dom';
 
-import { readOtherUserLocation } from '../../api/firebase';
+import './users-map.scss';
+
+
+const Map = ReactMapboxGl({
+    accessToken:
+        process.env.REACT_APP_MAPBOX_TOKEN
+});
 
 const UserMap = () => {
-    const { coordinates } = useGlobalState();
-    useEffect(() => {
-        // readOtherUserLocation({ uid: "YOF0cSiRNvg0ZNOGtzSLTW088002" })
-    }, [])
+    const { coordinates, firebase } = useGlobalState();
+
+    if (!firebase.isAuthenticated) {
+        return (
+            <Redirect to="/" />
+        )
+    }
     if (!coordinates.hasCoordinates) {
         return (
             <Redirect to="/request" />
         )
     }
+    console.log('user map render')
     return (
         <Wrapper>
             <MapContainer coordinates={coordinates} />
@@ -43,25 +53,24 @@ const MapContainer = (props) => {
         longitude
     });
 
-    const Map = ReactMapboxGl({
-        accessToken:
-            process.env.REACT_APP_MAPBOX_TOKEN
-    });
+    console.log(history)
 
     return (
-        <Map
-            style="mapbox://styles/mapbox/basic-v9"
-            containerStyle={{
-                height: '100vh',
-                width: '100vw'
-            }}
-            center={[viewport.longitude, viewport.latitude]}
-            zoom={[viewport.zoom]}
-        >
-            <MarkerContainer coordinates={props.coordinates} />
+        <>
+            <Map
+                style="mapbox://styles/mapbox/basic-v9"
+                containerStyle={{
+                    height: '100vh',
+                    width: '100vw'
+                }}
+                center={[viewport.longitude, viewport.latitude]}
+                zoom={[viewport.zoom]}
+            >
+                <MarkerContainer coordinates={props.coordinates} />
+                <FriendsContainer setViewport={setViewport} viewport={viewport} />
+            </Map>
             <AbsoluteButton onClick={() => history.push('/add')}>Add Friend</AbsoluteButton>
-            <FriendsContainer />
-        </Map>
+        </>
     )
 }
 
@@ -80,10 +89,33 @@ const style = {
 
 const FriendsContainer = (props) => {
     const { authorizedUsers } = useGlobalState();
+    const history = useHistory()
+
     return Object.entries(authorizedUsers).map(([key, value]) => {
         const { coordinates } = value;
         return (
-            <Marker key="you-marker" coordinates={[coordinates.longitude, coordinates.latitude]}>
+            // <Layer>
+            //     <Feature
+            //         className="cursor-hover"
+            //         history={history}
+            //         onClick={() => {
+            //             history.push(`/map/${key}`)
+            //             props.setViewport({ zoom: 16, latitude: coordinates.latitude, longitude: coordinates.longitude })
+            //         }}
+            //         key={`friend-marker-${key}`}
+            //         coordinates={[coordinates.longitude, coordinates.latitude]}
+            //     >
+            //         <Image src={value.avatarUrl} />
+            //         <Avatar size="md" style={{ border: '2px solid white' }} src={value.avatarUrl} />
+            //         <div style={style} />
+            //     </Feature>
+            // </Layer>
+            <Marker onClick={() => {
+                history.push(`/map/${key}`)
+                props.setViewport({ zoom: 16, latitude: coordinates.latitude, longitude: coordinates.longitude })
+            }}
+                key={`friend-marker-${key}`}
+                coordinates={[coordinates.longitude, coordinates.latitude]}>
                 <Avatar size="md" style={{ border: '2px solid white' }} src={value.avatarUrl} />
                 <div style={style} />
             </Marker>
@@ -97,8 +129,7 @@ const MarkerContainer = (props) => {
 
     return (
         <Marker key="you-marker" coordinates={[props.coordinates.longitude, props.coordinates.latitude]}>
-            <Avatar size="md" style={{ border: '2px solid white' }} src={firebase.user.photoURL} />
-            <div style={style} />
+            <div className="you" />
         </Marker>
     )
 }

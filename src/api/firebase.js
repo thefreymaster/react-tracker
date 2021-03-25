@@ -27,22 +27,11 @@ export const checkForFirebaseAuth = (dispatch, showSuccessToast) => {
             userRefUpdates.on('value', (snapshot) => {
                 dispatch(isFetching);
                 const snapshotValue = snapshot.val();
-                Object.keys(snapshotValue.authorizedUsers).map((key) => {
-                    readFriendData({ uid: key, dispatch })
-                })
-                //read authorized user's data here and put into store to be rendered
-                // if (snapshotValue) {
-                //     dispatch({
-                //         type: 'POPULATE_RESTAURANTS',
-                //         payload: {
-                //             restaurants: snapshotValue.restaurants
-                //         }
-                //     });
-                //     dispatch(fetchingComplete);
-                // }
-                // else {
-                //     dispatch(fetchingComplete);
-                // }
+                if (snapshotValue?.authorizedUsers) {
+                    Object.keys(snapshotValue.authorizedUsers).map((key) => {
+                        readFriendData({ uid: key, dispatch })
+                    })
+                }
             })
         }
         else {
@@ -61,11 +50,11 @@ export const signInWithGoogle = (dispatch, showSuccessToast) => {
 export const signOutWithGoogle = (dispatch, showInfoToast, history) => {
     firebase.auth().signOut().then(function () {
         setTimeout(() => {
-            dispatch({ type: 'TOGGLE_SETTINGS_DRAWER' });
+            dispatch({ type: 'FIREBASE_AUTHENTICATION_SIGN_OUT_SUCCESS' });
             showInfoToast();
             history.push("/")
             setTimeout(() => {
-                dispatch({ type: 'FIREBASE_AUTHENTICATION_SIGN_OUT_SUCCESS' });
+                dispatch({ type: 'TOGGLE_SETTINGS_DRAWER' });
             }, 1000);
         }, 500);
     }).catch(function (error) {
@@ -75,7 +64,7 @@ export const signOutWithGoogle = (dispatch, showInfoToast, history) => {
 
 export const addUserLocation = ({ postData, uid, dispatch, avatarUrl }) => {
     var userListRef = firebase.database().ref(`users/${uid}`);
-    userListRef.update({ ...postData, createdDate: new Date().toISOString(), avatarUrl  }).then(() => {
+    userListRef.update({ ...postData, createdDate: new Date().toISOString(), avatarUrl }).then(() => {
         dispatch(fetchingComplete);
     });
 }
@@ -87,11 +76,17 @@ export const addFriendCode = ({ postData, key, dispatch }) => {
     });
 }
 
-const addAuthorizedUser = ({ postData, uid, dispatch, history }) => {
+const removeFriendCode = ({ key }) => {
+    var authorizationsListRef = firebase.database().ref(`authorizations/${key}`);
+    authorizationsListRef.remove();
+}
+
+const addAuthorizedUser = ({ postData, uid, dispatch, history, key }) => {
     var userListRef = firebase.database().ref(`users/${uid}/authorizedUsers`);
     userListRef.update({ ...postData }).then(() => {
+        removeFriendCode({ key })
         dispatch(fetchingComplete);
-        history.push('/map')
+        history.push('/map');
     });
 }
 
@@ -107,7 +102,7 @@ export const readFriendCode = ({ key, uid, dispatch, history }) => {
     var authorizationsListRef = firebase.database().ref(`authorizations/${key}`);
     authorizationsListRef.once('value', (snapshot) => {
         const snapshotValue = snapshot.val();
-        addAuthorizedUser({ postData: snapshotValue, uid, dispatch, history });
+        addAuthorizedUser({ postData: snapshotValue, uid, dispatch, history, key });
     })
 }
 
@@ -116,7 +111,6 @@ export const readOtherUserLocation = ({ key }) => {
     var userRefUpdates = firebase.database().ref(`authorizations/${key}`);
     userRefUpdates.on('value', (snapshot) => {
         const snapshotValue = snapshot.val();
-        debugger
         //add data to store next to be rendered
     })
 }

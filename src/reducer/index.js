@@ -18,7 +18,6 @@ const reducer = (state, action) => {
         case 'FIREBASE_AUTHENTICATION_SIGN_OUT_SUCCESS': {
             newState.firebase.isAuthenticated = false;
             newState.firebase.user = {};
-            newState.restaurants = [];
             break;
         }
         case 'FIREBASE_AUTHENTICATION_VERIFICATION_COMPLETE': {

@@ -12,7 +12,11 @@ const Router = () => {
     const { firebase } = useGlobalState();
 
     if (firebase.isValidatingAuthentication) {
-        return <Wrapper><Spinner /></Wrapper>
+        return (
+            <Wrapper>
+                <Spinner />
+            </Wrapper>
+        )
     }
     return (
         <Switch>
@@ -23,6 +27,9 @@ const Router = () => {
                 <RequestLocation />
             </Route>
             <Route exact path="/map">
+                <UserMap />
+            </Route>
+            <Route exact path="/map/:id">
                 <UserMap />
             </Route>
             <Route exact path="/add">

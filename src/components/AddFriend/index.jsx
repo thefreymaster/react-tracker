@@ -1,4 +1,4 @@
-import { Box, FormControl, FormLabel, Input } from '@chakra-ui/react';
+import { Box, Divider, FormControl, FormLabel, Input, Text } from '@chakra-ui/react';
 import { Field, Form, Formik } from 'formik';
 import React from 'react';
 import { useState } from 'react';
@@ -11,6 +11,13 @@ import { useGlobalState } from '../../providers/root';
 import { generateKey } from '../../utils/generateKey';
 import { readFriendCode } from '../../api/firebase';
 import { useHistory } from 'react-router-dom';
+
+const validate = ({ values, key }) => {
+    if(values.code === key.toString() || values.code.length !== 4){
+        return true;
+    }
+    return false;
+}
 
 const AddFriend = () => {
     const { firebase, dispatch } = useGlobalState();
@@ -32,8 +39,13 @@ const AddFriend = () => {
     return (
         <Wrapper>
             <Box display="flex" justifyContent="center" alignItems="center" flexDir="column">
-                <Font>Add Friend</Font>
-                Code: {key}
+                <Text>Add Friend</Text>
+                <Text fontSize="72px" fontWeight="bold">{key}</Text>
+                <Text>Share this code with a friend to add you.</Text>
+                <Text>You must both add each other.</Text>
+                <Box padding="10px" />
+                <Divider />
+                <Box padding="10px" />
                 <Formik initialValues={{ code: '' }}>
                     {(props) => {
                         return (
@@ -42,11 +54,12 @@ const AddFriend = () => {
                                     {({ field, form }) => (
                                         <FormControl isRequired>
                                             <FormLabel htmlFor="code">Add Friend's Code Below</FormLabel>
-                                            <Input {...field} variant="filled" id="code" placeholder="4234" autoCorrect={false} _autofill={false} />
+                                            <Input maxLength={4} {...field} variant="filled" id="code" placeholder="4234" autoCorrect={false} _autofill={false} />
                                         </FormControl>
                                     )}
                                 </Field>
-                                <AbsoluteButton onClick={() => readFriendCode({ key: props.values.code, uid, dispatch, history })}>Submit</AbsoluteButton>
+                                <AbsoluteButton left={20} right="none" onClick={() => history.goBack()}>Back</AbsoluteButton>
+                                <AbsoluteButton disabled={validate({ values: props.values, key })} onClick={() => readFriendCode({ key: props.values.code, uid, dispatch, history })}>Submit</AbsoluteButton>
                             </Form>
                         )
                     }}

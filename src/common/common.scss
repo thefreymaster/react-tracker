@@ -1,0 +1,52 @@
+.background-transition{
+    transition: background-color 300ms ease-in-out;
+}
+
+.cursor:hover{
+    cursor: pointer;
+  }
+
+.safari-flex {
+    -webkit-flex: 1 1 auto;
+    flex: 1 1 auto;
+    display: -webkit-box;   /* OLD - iOS 6-, Safari 3.1-6, BB7 */
+    display: -ms-flexbox;  /* TWEENER - IE 10 */
+    display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
+    display: flex;    
+}
+
+.hover-cursor:hover{
+    cursor: pointer;
+}
+
+.cls-1{fill:#f5f0e1;}.cls-2{fill:#1e3d59;}
+
+.transition-background{
+    transition: background-color 150ms ease-in-out !important;
+}
+
+img{
+    max-height: 200px;
+}
+
+.mobile-device-wrapper{
+    min-width: 100%;
+}
+
+.desktop-device-wrapper{
+    width: 600px;
+}
+
+.mobile-wrapper{
+    min-width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+}
+
+.desktop-wrapper{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}

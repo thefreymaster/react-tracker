@@ -7,9 +7,21 @@ import Wrapper from '../../common/Wrapper';
 
 const RequestLocation = () => {
     const { coordinates, dispatch, firebase } = useGlobalState();
+
     useEffect(() => {
-        getGPSCoordinates(dispatch, firebase.user.uid, firebase.user.photoURL)
+        if (firebase.isAuthenticated) {
+            // const getGPS = () => {
+            //     setTimeout(() => {
+            //         getGPSCoordinates(dispatch, firebase.user.uid, firebase.user.photoURL)
+            //         getGPS();
+            //     }, 5000);
+            // }
+            // getGPS();
+            getGPSCoordinates(dispatch, firebase.user.uid, firebase.user.photoURL)
+
+        }
     }, [])
+
     if (!coordinates.hasCoordinates) {
         return (
             <Wrapper>

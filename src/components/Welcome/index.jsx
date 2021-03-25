@@ -57,10 +57,15 @@ const Welcome = () => {
             }}>
                 <SlideFade direction="bottom" in={isOpen}>
                     <Wrapper>
-                        <Font fontWeight={900} fontSize={isMobile ? 72 : 124} color={PRIMARY_COLOR} variant="primary">Tracker</Font>
-                        <Font fontWeight={600} fontSize={18} color={PRIMARY_COLOR}>We all track together</Font>
-                        <Box mt={5} />
-                        <Button colorScheme={PRIMARY_COLOR_SCHEME} disabled={firebase.isValidatingAuthentication} onClick={() => signInWithGoogle(dispatch, showSuccessToast)}>Sign Up With Google</Button>
+                        <Box display="flex" flexDir="column" justifyContent="center" alignItems="center">
+                            <Font fontWeight={900} fontSize={isMobile ? 72 : 124} variant="primary">Friendar</Font>
+                            <Font fontWeight={600} fontSize={18}>Keep track of friends</Font>
+                            <Box mt={5} display="flex" flexDir="row">
+                                <Button size="lg" colorScheme={PRIMARY_COLOR_SCHEME} disabled={firebase.isValidatingAuthentication} onClick={() => signInWithGoogle(dispatch, showSuccessToast)}>Sign Up With Google</Button>
+                                <Box mr={5} />
+                                <Button size="lg" colorScheme={PRIMARY_COLOR_SCHEME} disabled={firebase.isValidatingAuthentication} onClick={() => signInWithGoogle(dispatch, showSuccessToast)}>Sign In With Google</Button>
+                            </Box>
+                        </Box>
                     </Wrapper>
                     {/* <div style={background} className="cover-background" /> */}
                 </SlideFade>
