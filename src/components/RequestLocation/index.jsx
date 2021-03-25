@@ -11,6 +11,7 @@ const RequestLocation = () => {
 
     useEffect(() => {
         if (firebase.isAuthenticated) {
+            // getGPSCoordinates(dispatch, firebase.user.uid, firebase.user.photoURL)
             // const getGPS = () => {
             //     setTimeout(() => {
             //         getGPSCoordinates(dispatch, firebase.user.uid, firebase.user.photoURL)

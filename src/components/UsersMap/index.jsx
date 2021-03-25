@@ -54,7 +54,6 @@ const MapContainer = (props) => {
     const { latitude, longitude } = coordinates;
     const { id } = useParams();
 
-    console.log(isEmpty(authorizedUsers))
     if (id && !isEmpty(authorizedUsers)) {
         viewportObj = {
             width: window.innerWidth,
@@ -75,11 +74,16 @@ const MapContainer = (props) => {
     }
     useEffect(() => {
         setViewport({ ...viewportObj })
+    }, [])
+    useEffect(() => {
+        setViewport({ ...viewportObj })
     }, [authorizedUsers, id])
-    console.log({ ...viewportObj })
-    const [viewport, setViewport] = React.useState({ ...viewportObj });
-    const history = useHistory()
+    const [viewport, setViewport] = React.useState();
+    const history = useHistory();
 
+    if(!viewport){
+        return <Spinner />
+    }
     return (
         <>
             <Map
@@ -90,6 +94,9 @@ const MapContainer = (props) => {
                 }}
                 center={[viewport.longitude, viewport.latitude]}
                 zoom={[viewport.zoom]}
+                // onMoveEnd={(stop) => {
+                //     setViewport({ ...viewportObj, latitude: stop.transform.center.lat, longitude: stop.transform.center.lng })
+                // }}
             >
                 <MarkerContainer coordinates={props.coordinates} />
                 <FriendsContainer setViewport={setViewport} viewport={viewport} />
