@@ -26,6 +26,9 @@ const Router = () => {
             <Route exact path="/request">
                 <RequestLocation />
             </Route>
+            <Route exact path="/request/:id">
+                <RequestLocation />
+            </Route>
             <Route exact path="/map">
                 <UserMap />
             </Route>

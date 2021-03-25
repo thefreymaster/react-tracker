@@ -2,11 +2,12 @@ import { Box, Button, Spinner } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
 import { useGlobalState } from '../../providers/root';
 import { getGPSCoordinates } from '../../utils/gps';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useParams } from 'react-router-dom';
 import Wrapper from '../../common/Wrapper';
 
 const RequestLocation = () => {
     const { coordinates, dispatch, firebase } = useGlobalState();
+    const { id } = useParams();
 
     useEffect(() => {
         if (firebase.isAuthenticated) {
@@ -29,6 +30,11 @@ const RequestLocation = () => {
                     <Spinner />
                 </Box>
             </Wrapper>
+        )
+    }
+    if (id) {
+        return (
+            <Redirect to={`/map/${id}`} />
         )
     }
     return (

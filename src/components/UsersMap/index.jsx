@@ -1,14 +1,14 @@
 import Wrapper from '../../common/Wrapper';
-import ReactMapboxGl, { Feature, Image, Layer, Marker } from 'react-mapbox-gl';
+import ReactMapboxGl, { Marker } from 'react-mapbox-gl';
 import React, { useEffect } from 'react';
 import { useGlobalState } from '../../providers/root';
 import { Redirect } from 'react-router-dom';
-import { Avatar } from '@chakra-ui/react';
-import { DAY_BOX_SHADOW } from '../../constants';
+import { Avatar, Spinner } from '@chakra-ui/react';
 import AbsoluteButton from '../../common/AbsoluteButton';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 import './users-map.scss';
+import { isEmpty } from 'lodash';
 
 
 const Map = ReactMapboxGl({
@@ -18,6 +18,7 @@ const Map = ReactMapboxGl({
 
 const UserMap = () => {
     const { coordinates, firebase } = useGlobalState();
+    const { id } = useParams();
 
     if (!firebase.isAuthenticated) {
         return (
@@ -25,11 +26,15 @@ const UserMap = () => {
         )
     }
     if (!coordinates.hasCoordinates) {
+        if(id){
+            return (
+                <Redirect to={`/request/${id}`} />
+            )
+        }
         return (
             <Redirect to="/request" />
         )
     }
-    console.log('user map render')
     return (
         <Wrapper>
             <MapContainer coordinates={coordinates} />
@@ -44,16 +49,36 @@ const defaultState = {
 }
 
 const MapContainer = (props) => {
-    const { latitude, longitude } = props.coordinates;
+    let viewportObj;
+    const { coordinates, authorizedUsers } = useGlobalState();
+    const { latitude, longitude } = coordinates;
+    const { id } = useParams();
+
+    console.log(isEmpty(authorizedUsers))
+    if (id && !isEmpty(authorizedUsers)) {
+        viewportObj = {
+            width: window.innerWidth,
+            height: window.innerHeight,
+            latitude: authorizedUsers[id].coordinates.latitude,
+            longitude: authorizedUsers[id].coordinates.longitude,
+            zoom: 16,
+        }
+    }
+    else {
+        viewportObj = {
+            width: window.innerWidth,
+            height: window.innerHeight,
+            latitude: coordinates.latitude,
+            longitude: coordinates.longitude,
+            zoom: 14,
+        }
+    }
+    useEffect(() => {
+        setViewport({ ...viewportObj })
+    }, [authorizedUsers, id])
+    console.log({ ...viewportObj })
+    const [viewport, setViewport] = React.useState({ ...viewportObj });
     const history = useHistory()
-
-    const [viewport, setViewport] = React.useState({
-        ...defaultState,
-        latitude,
-        longitude
-    });
-
-    console.log(history)
 
     return (
         <>

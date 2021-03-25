@@ -66,7 +66,7 @@ const reducer = (state, action) => {
         default:
             console.error(new Error());
     }
-    console.log({ action, newState })
+    console.log({ action, oldState: state, newState })
     return newState;
 }
 
