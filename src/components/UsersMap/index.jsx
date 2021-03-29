@@ -3,7 +3,7 @@ import ReactMapboxGl, { Marker } from 'react-mapbox-gl';
 import React, { useEffect } from 'react';
 import { useGlobalState } from '../../providers/root';
 import { Redirect } from 'react-router-dom';
-import { Avatar, Spinner } from '@chakra-ui/react';
+import { Avatar, AvatarGroup, Spinner } from '@chakra-ui/react';
 import AbsoluteButton from '../../common/AbsoluteButton';
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -26,7 +26,7 @@ const UserMap = () => {
         )
     }
     if (!coordinates.hasCoordinates) {
-        if(id){
+        if (id) {
             return (
                 <Redirect to={`/request/${id}`} />
             )
@@ -50,7 +50,7 @@ const defaultState = {
 
 const MapContainer = (props) => {
     let viewportObj;
-    const { coordinates, authorizedUsers } = useGlobalState();
+    const { coordinates, authorizedUsers, firebase } = useGlobalState();
     const { latitude, longitude } = coordinates;
     const { id } = useParams();
 
@@ -81,7 +81,7 @@ const MapContainer = (props) => {
     const [viewport, setViewport] = React.useState();
     const history = useHistory();
 
-    if(!viewport){
+    if (!viewport) {
         return <Spinner />
     }
     return (
@@ -94,14 +94,20 @@ const MapContainer = (props) => {
                 }}
                 center={[viewport.longitude, viewport.latitude]}
                 zoom={[viewport.zoom]}
-                // onMoveEnd={(stop) => {
-                //     setViewport({ ...viewportObj, latitude: stop.transform.center.lat, longitude: stop.transform.center.lng })
-                // }}
+            // onMoveEnd={(stop) => {
+            //     setViewport({ ...viewportObj, latitude: stop.transform.center.lat, longitude: stop.transform.center.lng })
+            // }}
             >
                 <MarkerContainer coordinates={props.coordinates} />
                 <FriendsContainer setViewport={setViewport} viewport={viewport} />
             </Map>
             <AbsoluteButton onClick={() => history.push('/add')}>Add Friend</AbsoluteButton>
+            <AvatarGroup size="md" max={4} style={{ position: 'absolute', bottom: 20, left: 20 }}>
+                <Avatar onClick={() => setViewport({ ...viewportObj, latitude, longitude })} src={firebase.user.photoURL} />
+                {Object.entries(authorizedUsers).map(([key, value]) => (
+                    <Avatar onClick={() => setViewport({ ...viewportObj, latitude: coordinates.latitude, longitude: coordinates.longitude })} src={value.avatarUrl} />
+                ))}
+            </AvatarGroup>
         </>
     )
 }

@@ -1,4 +1,4 @@
-import { Box, Divider, FormControl, FormLabel, Input, Text } from '@chakra-ui/react';
+import { Tag, Box, Button, Divider, FormControl, FormLabel, Input, Text } from '@chakra-ui/react';
 import { Field, Form, Formik } from 'formik';
 import React from 'react';
 import { useState } from 'react';
@@ -25,7 +25,8 @@ const AddFriend = () => {
     const { uid } = user;
     const history = useHistory()
 
-    const [key, setKey] = useState(generateKey())
+    const [key, setKey] = useState(generateKey());
+    const [showForm, setShowForm] = useState(false);
     useEffect(() => {
         addFriendCode({
             postData: {
@@ -40,30 +41,42 @@ const AddFriend = () => {
         <Wrapper>
             <Box display="flex" justifyContent="center" alignItems="center" flexDir="column">
                 <Text>Add Friend</Text>
-                <Text fontSize="72px" fontWeight="bold">{key}</Text>
-                <Text>Share this code with a friend to add you.</Text>
+                <Box padding="10px" />
+                <Tag>
+                    <Text fontSize="64px" fontWeight="bold">{key}</Text>
+                </Tag>
+                <Box padding="10px" />
+                <Text>Send this code with a friend to add you.</Text>
                 <Text>You must both add each other.</Text>
                 <Box padding="10px" />
                 <Divider />
                 <Box padding="10px" />
-                <Formik initialValues={{ code: '' }}>
-                    {(props) => {
-                        return (
-                            <Form>
-                                <Field name="code">
-                                    {({ field, form }) => (
-                                        <FormControl isRequired>
-                                            <FormLabel htmlFor="code">Add Friend's Code Below</FormLabel>
-                                            <Input maxLength={4} {...field} variant="filled" id="code" placeholder="4234" autoCorrect={false} _autofill={false} />
-                                        </FormControl>
-                                    )}
-                                </Field>
-                                <AbsoluteButton left={20} right="none" onClick={() => history.goBack()}>Back</AbsoluteButton>
-                                <AbsoluteButton disabled={validate({ values: props.values, key })} onClick={() => readFriendCode({ key: props.values.code, uid, dispatch, history })}>Submit</AbsoluteButton>
-                            </Form>
-                        )
-                    }}
-                </Formik>
+                {
+                    showForm ? (
+                        <>
+                            <Formik initialValues={{ code: '' }}>
+                                {(props) => {
+                                    return (
+                                        <Form>
+                                            <Field name="code">
+                                                {({ field, form }) => (
+                                                    <FormControl isRequired>
+                                                        <FormLabel htmlFor="code">Add Friend's Code Below</FormLabel>
+                                                        <Input maxLength={4} {...field} variant="filled" id="code" placeholder="Four digit code" autoCorrect={false} _autofill={false} />
+                                                    </FormControl>
+                                                )}
+                                            </Field>
+                                            <AbsoluteButton disabled={validate({ values: props.values, key })} onClick={() => readFriendCode({ key: props.values.code, uid, dispatch, history })}>Submit</AbsoluteButton>
+                                        </Form>
+                                    )
+                                }}
+                            </Formik>
+                        </>
+                    ) : (
+                        <Button onClick={() => setShowForm(true)}>Enter Friend's Code</Button>
+                    )
+                }
+                <AbsoluteButton left={20} right="none" onClick={() => history.goBack()}>Back</AbsoluteButton>
             </Box>
         </Wrapper>
     )
