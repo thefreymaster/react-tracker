@@ -5,11 +5,13 @@ import "firebase/database";
 import "firebase/storage";
 
 import { authValidationComplete, isFetching, fetchingComplete } from "../actions";
+import { generateKey } from "../utils/generateKey";
 
 export const checkForFirebaseAuth = (dispatch, showSuccessToast) => {
     firebase.auth()
         .getRedirectResult()
         .then((result) => {
+            console.log(result)
             if (result.credential) {
                 dispatch({ type: 'FIREBASE_AUTHENTICATION_SUCCESS', payload: { user: result.user } });
                 setTimeout(() => {
@@ -17,10 +19,15 @@ export const checkForFirebaseAuth = (dispatch, showSuccessToast) => {
                 }, 500);
                 showSuccessToast();
             }
+            if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) {
+                console.log('new')
+                createNewGroup(result.user.uid);
+            }
         }).catch((error) => {
             console.error(error);
         });
     firebase.auth().onAuthStateChanged((user) => {
+        console.log(user)
         if (user) {
             dispatch({ type: 'FIREBASE_AUTHENTICATION_SUCCESS', payload: { user } });
             var userRefUpdates = firebase.database().ref('users/' + user.uid);
@@ -64,7 +71,11 @@ export const signOutWithGoogle = (dispatch, showInfoToast, history) => {
 
 export const addUserLocation = ({ postData, uid, dispatch, avatarUrl }) => {
     var userListRef = firebase.database().ref(`users/${uid}`);
-    userListRef.update({ ...postData, createdDate: new Date().toISOString(), avatarUrl }).then(() => {
+    userListRef.update({
+        ...postData,
+        createdDate: new Date().toISOString(),
+        avatarUrl
+    }).then(() => {
         dispatch(fetchingComplete);
     });
 }
@@ -74,6 +85,24 @@ export const addFriendCode = ({ postData, key, dispatch }) => {
     authorizationsListRef.update({ ...postData }).then(() => {
         dispatch(fetchingComplete);
     });
+}
+
+const updateUserGroupId = (groupId, uid) => {
+    var userListRef = firebase.database().ref(`users/${uid}`);
+    userListRef.update({ groupId: groupId.toString() }).then(() => {});
+}
+
+const createNewGroup = (uid) => {
+    const groupId = generateKey();
+    console.log(groupId)
+    var groupListRef = firebase.database().ref(`groups/${groupId}`);
+    console.log({ groupId, [uid]: true })
+
+    groupListRef.set({ groupId: groupId.toString(), [uid]: true }).then(() => {
+        updateUserGroupId(groupId, uid);
+    }).catch((e) => {
+        debugger
+    })
 }
 
 const removeFriendCode = ({ key }) => {

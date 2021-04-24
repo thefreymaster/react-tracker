@@ -3,7 +3,7 @@ import ReactMapboxGl, { Marker } from 'react-mapbox-gl';
 import React, { useEffect } from 'react';
 import { useGlobalState } from '../../providers/root';
 import { Redirect } from 'react-router-dom';
-import { Avatar, AvatarGroup, Spinner } from '@chakra-ui/react';
+import { Avatar, AvatarBadge, AvatarGroup, Spinner } from '@chakra-ui/react';
 import AbsoluteButton from '../../common/AbsoluteButton';
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -94,19 +94,22 @@ const MapContainer = (props) => {
                 }}
                 center={[viewport.longitude, viewport.latitude]}
                 zoom={[viewport.zoom]}
-            // onMoveEnd={(stop) => {
-            //     setViewport({ ...viewportObj, latitude: stop.transform.center.lat, longitude: stop.transform.center.lng })
-            // }}
             >
                 <MarkerContainer coordinates={props.coordinates} />
                 <FriendsContainer setViewport={setViewport} viewport={viewport} />
             </Map>
             <AbsoluteButton onClick={() => history.push('/add')}>Add Friend</AbsoluteButton>
             <AvatarGroup size="md" max={4} style={{ position: 'absolute', bottom: 20, left: 20 }}>
-                <Avatar onClick={() => setViewport({ ...viewportObj, latitude, longitude })} src={firebase.user.photoURL} />
-                {Object.entries(authorizedUsers).map(([key, value]) => (
-                    <Avatar onClick={() => setViewport({ ...viewportObj, latitude: coordinates.latitude, longitude: coordinates.longitude })} src={value.avatarUrl} />
-                ))}
+                {Object.entries(authorizedUsers).map(([key, value]) => {
+                    if (value.uid !== firebase.user.uid) {
+                        return (
+                            <Avatar className="cursor-hover" onClick={() => (
+                                setViewport({ ...viewportObj, zoom: 17, latitude: value.coordinates.latitude, longitude: value.coordinates.longitude })
+                            )} src={value.avatarUrl} />
+                        )
+                    }
+                    return null;
+                })}
             </AvatarGroup>
         </>
     )
