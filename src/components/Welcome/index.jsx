@@ -62,7 +62,7 @@ const Welcome = () => {
                             <Font fontWeight={600} fontSize={18}>Keep track of friends</Font>
                             <Box mt={5} display="flex" flexDir={isMobile ? "column" : "row"}>
                                 <Button size="lg" colorScheme={PRIMARY_COLOR_SCHEME} disabled={firebase.isValidatingAuthentication} onClick={() => signInWithGoogle(dispatch, showSuccessToast)}>Sign Up With Google</Button>
-                                <Box mr={5} />
+                                <Box mr={5} mt={4} />
                                 <Button size="lg" colorScheme={PRIMARY_COLOR_SCHEME} disabled={firebase.isValidatingAuthentication} onClick={() => signInWithGoogle(dispatch, showSuccessToast)}>Sign In With Google</Button>
                             </Box>
                         </Box>

@@ -22,6 +22,7 @@ export interface IDefaultState {
         longitude?: number;
         hasCoordinates: boolean;
     }
+    groupId: string;
 }
 
 const defaultState: IDefaultState = {
@@ -42,6 +43,7 @@ const defaultState: IDefaultState = {
     coordinates: {
         hasCoordinates: false,
     },
+    groupId: '',
     dispatch: () => { },
 }
 

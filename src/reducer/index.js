@@ -63,6 +63,10 @@ const reducer = (state, action) => {
             newState.meta.isInstalled = true;
             break;
         }
+        case 'SET_GROUP_ID': {
+            newState.groupId = payload.groupId;
+            break;
+        }
         default:
             console.error(new Error());
     }

@@ -98,7 +98,7 @@ const MapContainer = (props) => {
                 <MarkerContainer coordinates={props.coordinates} />
                 <FriendsContainer setViewport={setViewport} viewport={viewport} />
             </Map>
-            <AbsoluteButton onClick={() => history.push('/add')}>Add Friend</AbsoluteButton>
+            <AbsoluteButton onClick={() => history.push('/add')}>Invite Friend</AbsoluteButton>
             <AvatarGroup size="md" max={4} style={{ position: 'absolute', bottom: 20, left: 20 }}>
                 {Object.entries(authorizedUsers).map(([key, value]) => {
                     if (value.uid !== firebase.user.uid) {

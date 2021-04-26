@@ -27,17 +27,22 @@ export const checkForFirebaseAuth = (dispatch, showSuccessToast) => {
             console.error(error);
         });
     firebase.auth().onAuthStateChanged((user) => {
-        console.log(user)
         if (user) {
             dispatch({ type: 'FIREBASE_AUTHENTICATION_SUCCESS', payload: { user } });
             var userRefUpdates = firebase.database().ref('users/' + user.uid);
             userRefUpdates.on('value', (snapshot) => {
                 dispatch(isFetching);
                 const snapshotValue = snapshot.val();
-                if (snapshotValue?.authorizedUsers) {
-                    Object.keys(snapshotValue.authorizedUsers).map((key) => {
-                        readFriendData({ uid: key, dispatch })
-                    })
+                if (snapshotValue) {
+                    if (snapshotValue.groupId) {
+                        dispatch({ type: 'SET_GROUP_ID', payload: { groupId: snapshotValue.groupId } })
+                    }
+                    readGroupId(snapshotValue.groupId, user.uid, dispatch)
+                    // if (snapshotValue?.authorizedUsers) {
+                    //     Object.keys(snapshotValue.authorizedUsers).map((key) => {
+                    //         readFriendData({ uid: key, dispatch })
+                    //     })
+                    // }
                 }
             })
         }
@@ -87,21 +92,31 @@ export const addFriendCode = ({ postData, key, dispatch }) => {
     });
 }
 
+const readGroupId = (groupId, uid, dispatch) => {
+    var groupsRefUpdates = firebase.database().ref('groups/' + groupId);
+    groupsRefUpdates.on('value', (snapshot) => {
+        const snapshotValue = snapshot.val();
+        Object.keys(snapshotValue).map((key) => {
+            if (key !== uid && key !== 'groupId') {
+                readFriendData({ uid: key, dispatch })
+            }
+        })
+    })
+}
+
 const updateUserGroupId = (groupId, uid) => {
     var userListRef = firebase.database().ref(`users/${uid}`);
-    userListRef.update({ groupId: groupId.toString() }).then(() => {});
+    userListRef.update({ groupId: groupId.toString() }).then(() => { });
 }
 
 const createNewGroup = (uid) => {
     const groupId = generateKey();
-    console.log(groupId)
     var groupListRef = firebase.database().ref(`groups/${groupId}`);
-    console.log({ groupId, [uid]: true })
 
-    groupListRef.set({ groupId: groupId.toString(), [uid]: true }).then(() => {
+    groupListRef.set({ groupId: groupId.toString(), [uid]: uid }).then(() => {
         updateUserGroupId(groupId, uid);
     }).catch((e) => {
-        debugger
+        console.log(e)
     })
 }
 
@@ -124,6 +139,22 @@ const readFriendData = ({ uid, dispatch }) => {
     authorizationsListRef.on('value', (snapshot) => {
         const snapshotValue = snapshot.val();
         dispatch({ type: 'ADD_AUTHORIZED_USER_DATA', payload: { ...snapshotValue, uid } })
+    })
+}
+
+const removeGroup = ({ groupId, uid }) => {
+    var groupListRef = firebase.database().ref(`groups/${groupId}/users/${uid}`);
+    groupListRef.update({ groupId, [uid]: null });
+}
+
+export const joinGroupId = ({ newGroupId, groupId, uid, history }) => {
+    var groupListRef = firebase.database().ref(`groups/${newGroupId}`);
+    groupListRef.update({ groupId: newGroupId.toString(), [uid]: uid }).then(() => {
+        updateUserGroupId(newGroupId, uid);
+        history.push('/map');
+        // removeGroup({ groupId, uid })
+    }).catch((e) => {
+        console.log(e);
     })
 }
 
