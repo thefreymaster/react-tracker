@@ -135,29 +135,13 @@ const FriendsContainer = (props) => {
     return Object.entries(authorizedUsers).map(([key, value]) => {
         const { coordinates } = value;
         return (
-            // <Layer>
-            //     <Feature
-            //         className="cursor-hover"
-            //         history={history}
-            //         onClick={() => {
-            //             history.push(`/map/${key}`)
-            //             props.setViewport({ zoom: 16, latitude: coordinates.latitude, longitude: coordinates.longitude })
-            //         }}
-            //         key={`friend-marker-${key}`}
-            //         coordinates={[coordinates.longitude, coordinates.latitude]}
-            //     >
-            //         <Image src={value.avatarUrl} />
-            //         <Avatar size="md" style={{ border: '2px solid white' }} src={value.avatarUrl} />
-            //         <div style={style} />
-            //     </Feature>
-            // </Layer>
             <Marker onClick={() => {
                 history.push(`/map/${key}`)
                 props.setViewport({ zoom: 16, latitude: coordinates.latitude, longitude: coordinates.longitude })
             }}
                 key={`friend-marker-${key}`}
                 coordinates={[coordinates.longitude, coordinates.latitude]}>
-                <Avatar size="md" style={{ border: '2px solid white' }} src={value.avatarUrl} />
+                <Avatar size="md" style={{ border: '2px solid white' }} src={value.provider?.photoUrl || value.avatarUrl} />
                 <div style={style} />
             </Marker>
         )

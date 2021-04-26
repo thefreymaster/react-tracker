@@ -3,13 +3,12 @@ import { Field, Form, Formik } from 'formik';
 import React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { addFriendCode, joinGroupId } from '../../api/firebase';
+import { joinGroupId } from '../../api/firebase';
 import AbsoluteButton from '../../common/AbsoluteButton';
 import Font from '../../common/Font';
 import Wrapper from '../../common/Wrapper';
 import { useGlobalState } from '../../providers/root';
 import { generateKey } from '../../utils/generateKey';
-import { readFriendCode } from '../../api/firebase';
 import { useHistory } from 'react-router-dom';
 
 const validate = ({ values, key }) => {
@@ -27,15 +26,7 @@ const AddFriend = () => {
 
     const [key, setKey] = useState(generateKey());
     const [showForm, setShowForm] = useState(false);
-    useEffect(() => {
-        // addFriendCode({
-        //     postData: {
-        //         [user.uid]: true
-        //     },
-        //     key,
-        //     dispatch
-        // })
-    }, [])
+
     console.log(key)
     return (
         <Wrapper>

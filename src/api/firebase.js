@@ -38,11 +38,6 @@ export const checkForFirebaseAuth = (dispatch, showSuccessToast) => {
                         dispatch({ type: 'SET_GROUP_ID', payload: { groupId: snapshotValue.groupId } })
                     }
                     readGroupId(snapshotValue.groupId, user.uid, dispatch)
-                    // if (snapshotValue?.authorizedUsers) {
-                    //     Object.keys(snapshotValue.authorizedUsers).map((key) => {
-                    //         readFriendData({ uid: key, dispatch })
-                    //     })
-                    // }
                 }
             })
         }
@@ -74,20 +69,14 @@ export const signOutWithGoogle = (dispatch, showInfoToast, history) => {
     });
 }
 
-export const addUserLocation = ({ postData, uid, dispatch, avatarUrl }) => {
-    var userListRef = firebase.database().ref(`users/${uid}`);
+export const addUserLocation = ({ postData, user, dispatch }) => {
+    const [provider] = user.providerData;
+    var userListRef = firebase.database().ref(`users/${user.uid}`);
     userListRef.update({
         ...postData,
         createdDate: new Date().toISOString(),
-        avatarUrl
+        provider
     }).then(() => {
-        dispatch(fetchingComplete);
-    });
-}
-
-export const addFriendCode = ({ postData, key, dispatch }) => {
-    var authorizationsListRef = firebase.database().ref(`authorizations/${key}`);
-    authorizationsListRef.update({ ...postData }).then(() => {
         dispatch(fetchingComplete);
     });
 }
@@ -120,20 +109,6 @@ const createNewGroup = (uid) => {
     })
 }
 
-const removeFriendCode = ({ key }) => {
-    var authorizationsListRef = firebase.database().ref(`authorizations/${key}`);
-    authorizationsListRef.remove();
-}
-
-const addAuthorizedUser = ({ postData, uid, dispatch, history, key }) => {
-    var userListRef = firebase.database().ref(`users/${uid}/authorizedUsers`);
-    userListRef.update({ ...postData }).then(() => {
-        removeFriendCode({ key })
-        dispatch(fetchingComplete);
-        history.push('/map');
-    });
-}
-
 const readFriendData = ({ uid, dispatch }) => {
     var authorizationsListRef = firebase.database().ref(`users/${uid}`);
     authorizationsListRef.on('value', (snapshot) => {
@@ -142,8 +117,8 @@ const readFriendData = ({ uid, dispatch }) => {
     })
 }
 
-const removeGroup = ({ groupId, uid }) => {
-    var groupListRef = firebase.database().ref(`groups/${groupId}/users/${uid}`);
+const removeOldUidFromOldGroup = ({ groupId, uid }) => {
+    var groupListRef = firebase.database().ref(`groups/${groupId}`);
     groupListRef.update({ groupId, [uid]: null });
 }
 
@@ -152,25 +127,8 @@ export const joinGroupId = ({ newGroupId, groupId, uid, history }) => {
     groupListRef.update({ groupId: newGroupId.toString(), [uid]: uid }).then(() => {
         updateUserGroupId(newGroupId, uid);
         history.push('/map');
-        // removeGroup({ groupId, uid })
+        removeOldUidFromOldGroup({ groupId, uid })
     }).catch((e) => {
         console.log(e);
-    })
-}
-
-export const readFriendCode = ({ key, uid, dispatch, history }) => {
-    var authorizationsListRef = firebase.database().ref(`authorizations/${key}`);
-    authorizationsListRef.once('value', (snapshot) => {
-        const snapshotValue = snapshot.val();
-        addAuthorizedUser({ postData: snapshotValue, uid, dispatch, history, key });
-    })
-}
-
-export const readOtherUserLocation = ({ key }) => {
-    //read this uid from our logged in user's data
-    var userRefUpdates = firebase.database().ref(`authorizations/${key}`);
-    userRefUpdates.on('value', (snapshot) => {
-        const snapshotValue = snapshot.val();
-        //add data to store next to be rendered
     })
 }
