@@ -18,7 +18,6 @@ const reducer = (state, action) => {
         case 'FIREBASE_AUTHENTICATION_SIGN_OUT_SUCCESS': {
             newState.firebase.isAuthenticated = false;
             newState.firebase.user = {};
-            newState.restaurants = [];
             break;
         }
         case 'FIREBASE_AUTHENTICATION_VERIFICATION_COMPLETE': {
@@ -44,6 +43,10 @@ const reducer = (state, action) => {
 
             break;
         }
+        case 'ADD_AUTHORIZED_USER_DATA': {
+            newState.authorizedUsers[payload.uid] = payload;
+            break;
+        }
         case 'SET_HAS_GPS_COORDINATES': {
             newState.coordinates.hasCoordinates = true;
             break;
@@ -60,10 +63,14 @@ const reducer = (state, action) => {
             newState.meta.isInstalled = true;
             break;
         }
+        case 'SET_GROUP_ID': {
+            newState.groupId = payload.groupId;
+            break;
+        }
         default:
             console.error(new Error());
     }
-    console.log({ action, newState })
+    console.log({ action, oldState: state, newState })
     return newState;
 }
 

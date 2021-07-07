@@ -1,0 +1,24 @@
+{
+    "rules": {
+          "users": {
+        "$uid": {
+                  "createdDate": {
+             ".read": "$uid === auth.uid",
+             ".write": "$uid === auth.uid",
+          },
+          "latitude": {
+             ".read": "$uid === auth.uid || data.parent().child('authorizedUsers').child(auth.uid).exists()",
+             ".write": "$uid === auth.uid",
+          },
+          "longitude": {
+             ".read": "$uid === auth.uid || data.parent().child('authorizedUsers').child(auth.uid).exists()",
+             ".write": "$uid === auth.uid",
+          },
+          "authorizedUsers": {
+             ".read": "$uid === auth.uid",
+             ".write": "$uid === auth.uid",
+          }
+        }
+      }
+    }
+  }

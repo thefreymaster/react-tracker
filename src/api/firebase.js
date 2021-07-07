@@ -5,17 +5,23 @@ import "firebase/database";
 import "firebase/storage";
 
 import { authValidationComplete, isFetching, fetchingComplete } from "../actions";
+import { generateKey } from "../utils/generateKey";
 
 export const checkForFirebaseAuth = (dispatch, showSuccessToast) => {
     firebase.auth()
         .getRedirectResult()
         .then((result) => {
+            console.log(result)
             if (result.credential) {
                 dispatch({ type: 'FIREBASE_AUTHENTICATION_SUCCESS', payload: { user: result.user } });
                 setTimeout(() => {
                     dispatch({ type: 'TOGGLE_SETTINGS_DRAWER' });
                 }, 500);
                 showSuccessToast();
+            }
+            if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) {
+                console.log('new')
+                createNewGroup(result.user.uid);
             }
         }).catch((error) => {
             console.error(error);
@@ -28,16 +34,10 @@ export const checkForFirebaseAuth = (dispatch, showSuccessToast) => {
                 dispatch(isFetching);
                 const snapshotValue = snapshot.val();
                 if (snapshotValue) {
-                    dispatch({
-                        type: 'POPULATE_RESTAURANTS',
-                        payload: {
-                            restaurants: snapshotValue.restaurants
-                        }
-                    });
-                    dispatch(fetchingComplete);
-                }
-                else {
-                    dispatch(fetchingComplete);
+                    if (snapshotValue.groupId) {
+                        dispatch({ type: 'SET_GROUP_ID', payload: { groupId: snapshotValue.groupId } })
+                    }
+                    readGroupId(snapshotValue.groupId, user.uid, dispatch)
                 }
             })
         }
@@ -57,11 +57,11 @@ export const signInWithGoogle = (dispatch, showSuccessToast) => {
 export const signOutWithGoogle = (dispatch, showInfoToast, history) => {
     firebase.auth().signOut().then(function () {
         setTimeout(() => {
-            dispatch({ type: 'TOGGLE_SETTINGS_DRAWER' });
+            dispatch({ type: 'FIREBASE_AUTHENTICATION_SIGN_OUT_SUCCESS' });
             showInfoToast();
             history.push("/")
             setTimeout(() => {
-                dispatch({ type: 'FIREBASE_AUTHENTICATION_SIGN_OUT_SUCCESS' });
+                dispatch({ type: 'TOGGLE_SETTINGS_DRAWER' });
             }, 1000);
         }, 500);
     }).catch(function (error) {
@@ -69,42 +69,66 @@ export const signOutWithGoogle = (dispatch, showInfoToast, history) => {
     });
 }
 
-export const addUserLocation = ({ postData, uid, dispatch }) => {
-    var userListRef = firebase.database().ref(`users/${uid}/coordinates`);
-    userListRef.update({ ...postData, createdDate: new Date().toISOString() }).then(() => {
+export const addUserLocation = ({ postData, user, dispatch }) => {
+    const [provider] = user.providerData;
+    var userListRef = firebase.database().ref(`users/${user.uid}`);
+    userListRef.update({
+        ...postData,
+        createdDate: new Date().toISOString(),
+        provider
+    }).then(() => {
         dispatch(fetchingComplete);
     });
 }
 
-export const addRestaurant = ({ postData, uid, dispatch, history, toast }) => {
-    dispatch(isFetching);
-    var restaurantListRef = firebase.database().ref(`users/${uid}/restaurants`);
-    restaurantListRef.push({ ...postData, createdDate: new Date().toISOString() }).then(() => {
-        toast();
-        dispatch(fetchingComplete);
-        history.push("/");
-    });
+const readGroupId = (groupId, uid, dispatch) => {
+    var groupsRefUpdates = firebase.database().ref('groups/' + groupId);
+    groupsRefUpdates.on('value', (snapshot) => {
+        const snapshotValue = snapshot.val();
+        Object.keys(snapshotValue).map((key) => {
+            if (key !== uid && key !== 'groupId') {
+                readFriendData({ uid: key, dispatch })
+            }
+        })
+    })
 }
 
-export const updateRestaurant = ({ postData, uid, dispatch, history, itemId, toast }) => {
-    dispatch(isFetching);
-    var restaurantListRef = firebase.database().ref(`users/${uid}/restaurants/${itemId}`);
-    console.log({ ...postData, modifiedData: new Date().toISOString() })
-    restaurantListRef.update({ ...postData, modifiedData: new Date().toISOString() }).then(() => {
-        toast();
-        dispatch(fetchingComplete)
-        history.goBack();
-    });
+const updateUserGroupId = (groupId, uid) => {
+    var userListRef = firebase.database().ref(`users/${uid}`);
+    userListRef.update({ groupId: groupId.toString() }).then(() => { });
 }
 
-export const deleteRestaurant = ({ uid, dispatch, history, itemId, onClose, setIsDeleting, toast }) => {
-    dispatch(isFetching);
-    var restaurantListRef = firebase.database().ref(`users/${uid}/restaurants/${itemId}`);
-    restaurantListRef.remove().then(() => {
-        toast();
-        dispatch(fetchingComplete);
-        setIsDeleting(false);
-        onClose();
-        history.push("/");
-    });
+const createNewGroup = (uid) => {
+    const groupId = generateKey();
+    var groupListRef = firebase.database().ref(`groups/${groupId}`);
+
+    groupListRef.set({ groupId: groupId.toString(), [uid]: uid }).then(() => {
+        updateUserGroupId(groupId, uid);
+    }).catch((e) => {
+        console.log(e)
+    })
+}
+
+const readFriendData = ({ uid, dispatch }) => {
+    var authorizationsListRef = firebase.database().ref(`users/${uid}`);
+    authorizationsListRef.on('value', (snapshot) => {
+        const snapshotValue = snapshot.val();
+        dispatch({ type: 'ADD_AUTHORIZED_USER_DATA', payload: { ...snapshotValue, uid } })
+    })
+}
+
+const removeOldUidFromOldGroup = ({ groupId, uid }) => {
+    var groupListRef = firebase.database().ref(`groups/${groupId}`);
+    groupListRef.update({ groupId, [uid]: null });
+}
+
+export const joinGroupId = ({ newGroupId, groupId, uid, history }) => {
+    var groupListRef = firebase.database().ref(`groups/${newGroupId}`);
+    groupListRef.update({ groupId: newGroupId.toString(), [uid]: uid }).then(() => {
+        updateUserGroupId(newGroupId, uid);
+        history.push('/map');
+        removeOldUidFromOldGroup({ groupId, uid })
+    }).catch((e) => {
+        console.log(e);
+    })
 }

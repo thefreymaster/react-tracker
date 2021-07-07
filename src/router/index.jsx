@@ -1,30 +1,42 @@
 import React, { useEffect } from 'react';
-import UserMap from '../components/Map';
 import { useGlobalState } from '../providers/root';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import Welcome from '../components/Welcome';
 import { Spinner } from '@chakra-ui/react';
-import { getGPSCoordinates } from '../utils/gps';
+import RequestLocation from '../components/RequestLocation';
+import UserMap from '../components/UsersMap';
+import AddFriend from '../components/AddFriend';
+import Wrapper from '../common/Wrapper';
 
 const Router = () => {
-    const { firebase, coordinates, dispatch } = useGlobalState();
+    const { firebase } = useGlobalState();
 
-    useEffect(() => {
-        if(firebase.isAuthenticated){
-            getGPSCoordinates(dispatch, firebase.user.uid, coordinates.hasCoordinates)
-        }
-    }, [firebase.isAuthenticated])
-
-    if (firebase.isValidatingAuthentication || !coordinates.hasCoordinates) {
-        return <Spinner />
+    if (firebase.isValidatingAuthentication) {
+        return (
+            <Wrapper>
+                <Spinner />
+            </Wrapper>
+        )
     }
     return (
         <Switch>
+            <Route exact path="/">
+                <Welcome />
+            </Route>
+            <Route exact path="/request">
+                <RequestLocation />
+            </Route>
+            <Route exact path="/request/:id">
+                <RequestLocation />
+            </Route>
             <Route exact path="/map">
                 <UserMap />
             </Route>
-            <Route exact path="/">
-                <Welcome />
+            <Route exact path="/map/:id">
+                <UserMap />
+            </Route>
+            <Route exact path="/add">
+                <AddFriend />
             </Route>
             <Route exact path="/*">
                 <Redirect to="/" />

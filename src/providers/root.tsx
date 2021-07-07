@@ -15,12 +15,14 @@ export interface IDefaultState {
         isDay: boolean;
         isInstalled: boolean;
     }
+    authorizedUsers: object;
     dispatch: any;
     coordinates: {
         latitude?: number;
         longitude?: number;
         hasCoordinates: boolean;
     }
+    groupId: string;
 }
 
 const defaultState: IDefaultState = {
@@ -31,6 +33,7 @@ const defaultState: IDefaultState = {
         isAuthenticatedError: false,
         user: {},
     },
+    authorizedUsers: {},
     meta: {
         isServerError: false,
         fetching: true,
@@ -40,6 +43,7 @@ const defaultState: IDefaultState = {
     coordinates: {
         hasCoordinates: false,
     },
+    groupId: '',
     dispatch: () => { },
 }
 
@@ -49,7 +53,6 @@ export const useGlobalState = () => React.useContext(Context);
 
 export const Provider = (props: { children: React.ReactNode }) => {
     const [state, dispatch] = React.useReducer(reducer, defaultState);
-
     return (
         <Context.Provider value={{ ...state as IDefaultState, dispatch }}>
             {props.children}
